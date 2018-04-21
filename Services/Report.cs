@@ -18,11 +18,17 @@ namespace nom_nom_nom.Services
         public string Summary()
         {
             const int indent = 12;
-            string pad = new string(' ', indent);
-            string separator = $"{pad}-------------------";
+            var pad = new string(' ', indent);
+            var separator = $"{pad}-------------------";
+
+            string Format(Food food) => $"{pad}calories {food.Calories:N0} " +
+                                        $"protein {food.Protein:N1} (%{food.PercentProtein:N1}) " +
+                                        $"fat {food.Fat:N1} (%{food.PercentFat:N1}) " +
+                                        $"carbs {food.Carbs:N1} (%{food.PercentCarbs:N1})";
+
             var meals = _dataFile.Meals();
             var foods = _dataFile.Foods();
-            var groups = meals.GroupBy(tmm => tmm.Time.DayOfYear).OrderBy(group => group.Key);
+            var groups = meals.GroupBy(tmm => tmm.Time.DayOfYear).OrderBy(group => group.Key).ToList();
             var summary = new List<string>();
 
             foreach (var group in groups)
@@ -42,20 +48,22 @@ namespace nom_nom_nom.Services
                     });
 
                 summary.Add(separator);
-                summary.Add($"{pad}calories={cost.Calories:N0} protein={cost.Protein:N1} fat={cost.Fat:N1} carbs={cost.Carbs:N1}");
+                summary.Add(Format(cost));
                 summary.Add("");
             }
 
             var total = ComputeAllMealsCost(meals, foods);
+            var days = groups.Count;
+
+            summary.Add($"{pad}total ({days} days)");
             summary.Add($"{pad}===================");
-            var totalGrams = total.Protein + total.Fat + total.Carbs;
-            var percentProtein = total.Protein / totalGrams * 100;
-            var percentFat = total.Fat / totalGrams * 100;
-            var percentCarbs = total.Carbs / totalGrams * 100;
-            summary.Add($"{pad}calories={total.Calories:N0} " +
-                        $"protein={total.Protein:N1} (%{percentProtein:N1}) " +
-                        $"fat={total.Fat:N1} (%{percentFat:N1}) " +
-                        $"carbs={total.Carbs:N1} (%{percentCarbs:N1})");
+            summary.Add(Format(total));
+
+            summary.Add("");
+            summary.Add($"{pad}per day averages");
+            summary.Add($"{pad}===================");
+            var average = total / days;
+            summary.Add(Format(average));
 
             var untracked = Untracked(meals, foods);
             if (untracked.Any())

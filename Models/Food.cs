@@ -8,6 +8,11 @@
         public double Fat { get; set; }
         public double Carbs { get; set; }
 
+        private double Nutrients => Protein + Fat + Carbs;
+        public double PercentProtein => Protein / Nutrients * 100; 
+        public double PercentFat => Fat / Nutrients * 100; 
+        public double PercentCarbs => Carbs / Nutrients * 100; 
+
         public static Food operator +(Food a, Food b)
         {
             var sum = new Food
@@ -19,6 +24,19 @@
                 Carbs = a.Carbs + b.Carbs
             };
             return sum;
+        }
+
+        public static Food operator /(Food a, int days)
+        {
+            var food = new Food
+            {
+                Name = a.Name,
+                Calories = a.Calories / days,
+                Protein = a.Protein / days,
+                Fat = a.Fat / days,
+                Carbs = a.Carbs / days
+            };
+            return food;
         }
     }
 }
