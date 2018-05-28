@@ -12,7 +12,7 @@ namespace nom_nom_nom.Services
         public List<Meal> Meals()
         {
             var lines = File.ReadAllLines("C:\\Users\\mike\\Google Drive\\notes.txt");
-            var mealTypes = new[] { "breakfast", "lunch", "dinner", "snack" };
+            var mealTypes = new[] { Meal.Breakfast, Meal.Lunch, Meal.Dinner, Meal.Snack };
             var meals = lines.Where(item => mealTypes.Any(mt => item.IndexOf(mt, StringComparison.CurrentCultureIgnoreCase) >= 0));
 
             var tmms = meals
@@ -20,7 +20,7 @@ namespace nom_nom_nom.Services
                 .Select(mmm => new Meal
                 {
                     Time = DateTime.TryParse(mmm[0], out var time) ? time : DateTime.MinValue,
-                    MealType = mmm[1],
+                    MealType = mmm[1].Trim(),
                     Menu = mmm[2].Split(',').Select(m => m.Trim().ToLowerInvariant()).ToArray()
                 })
                 .ToList();

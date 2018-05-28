@@ -4,6 +4,7 @@
     <AssemblyName>nnn</AssemblyName>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.0</TargetFramework>
+    <RootNamespace>nom_nom_nom</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

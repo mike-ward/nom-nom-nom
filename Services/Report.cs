@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using nom_nom_nom.Comparers;
 using nom_nom_nom.Infrastructure;
 using nom_nom_nom.Models;
 
@@ -30,6 +31,7 @@ namespace nom_nom_nom.Services
             var foods = _dataFile.Foods();
 
             var groups = meals
+                .OrderBy(meal => meal.MealType, new OrderedComparer(new[] { Meal.Breakfast, Meal.Lunch, Meal.Dinner, Meal.Snack }))
                 .GroupBy(tmm => tmm.Time.DayOfYear)
                 .Where(tmm => 
                     tmm.Any(tm => tm.MealType.Contains(Meal.Breakfast)) &&
@@ -74,6 +76,13 @@ namespace nom_nom_nom.Services
             var average = total / days;
             summary.Add(Format(average));
 
+            var tracked = Tracked(meals, foods);
+            if (tracked.Any())
+            {
+                summary.Add($"{Environment.NewLine}Foods:");
+                summary.AddRange(tracked.Select(ut => $"\t{ut}"));
+            }
+
             var untracked = Untracked(meals, foods);
             if (untracked.Any())
             {
@@ -108,6 +117,23 @@ namespace nom_nom_nom.Services
                 .OrderBy(o => o)
                 .ToArray();
             return untracked;
+        }
+
+        private static string[] Tracked(IEnumerable<Meal> meals, IReadOnlyDictionary<string, Food> foods)
+        {
+            var tracked = meals
+                .SelectMany(meal => meal.Menu)
+                .Where(foods.ContainsKey)
+                .Distinct()
+                .OrderBy(o => o);
+
+            var trackedFoods = foods
+                .Where(food => tracked.Any(t => t == food.Key))
+                .Select(food => $"{food.Key,-28}  {food.Value.Calories,10:N1} {food.Value.Protein,10:N1} {food.Value.Fat,10:N1} {food.Value.Carbs,10:N1}")
+                .ToArray();
+
+            const string header = "                                Calories    Protein        Fat      Carbs";
+            return new []{header}.Concat(trackedFoods).ToArray();
         }
     }
 }
