@@ -5,9 +5,9 @@ using nom_nom_nom.Services;
 
 namespace nom_nom_nom
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             var container = RegisterServices();
             var application = container.GetService<IApplication>();

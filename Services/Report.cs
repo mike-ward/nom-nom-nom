@@ -28,7 +28,16 @@ namespace nom_nom_nom.Services
 
             var meals = _dataFile.Meals();
             var foods = _dataFile.Foods();
-            var groups = meals.GroupBy(tmm => tmm.Time.DayOfYear).OrderBy(group => group.Key).ToList();
+
+            var groups = meals
+                .GroupBy(tmm => tmm.Time.DayOfYear)
+                .Where(tmm => 
+                    tmm.Any(tm => tm.MealType.Contains(Meal.Breakfast)) &&
+                    tmm.Any(tm => tm.MealType.Contains(Meal.Lunch)) &&
+                    tmm.Any(tm => tm.MealType.Contains(Meal.Dinner)))
+                .OrderBy(group => group.Key)
+                .ToList();
+
             var summary = new List<string>();
 
             foreach (var group in groups)
