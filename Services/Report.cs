@@ -33,10 +33,7 @@ namespace nom_nom_nom.Services
             var groups = meals
                 .OrderBy(meal => meal.MealType, new OrderedComparer(new[] { Meal.Breakfast, Meal.Lunch, Meal.Dinner, Meal.Snack }))
                 .GroupBy(tmm => tmm.Time.DayOfYear)
-                .Where(tmm => 
-                    tmm.Any(tm => tm.MealType.Contains(Meal.Breakfast)) &&
-                    tmm.Any(tm => tm.MealType.Contains(Meal.Lunch)) &&
-                    tmm.Any(tm => tm.MealType.Contains(Meal.Dinner)))
+                .Where(tmm => new[] { Meal.Breakfast, Meal.Lunch, Meal.Dinner}.All(mt => tmm.Any(tm => tm.MealType.Contains(mt))))
                 .OrderBy(group => group.Key)
                 .ToList();
 
