@@ -60,7 +60,8 @@ namespace nom_nom_nom.Services
                 summary.Add("");
             }
 
-            var total = ComputeAllMealsCost(meals, foods);
+            var fullMeals = groups.SelectMany(o => o).ToArray();
+            var total = ComputeAllMealsCost(fullMeals, foods);
             var days = groups.Count;
 
             summary.Add($"{pad}total ({days} days)");
@@ -73,14 +74,14 @@ namespace nom_nom_nom.Services
             var average = total / days;
             summary.Add(Format(average));
 
-            var tracked = Tracked(meals, foods);
+            var tracked = Tracked(fullMeals, foods);
             if (tracked.Any())
             {
                 summary.Add($"{Environment.NewLine}Foods:");
                 summary.AddRange(tracked.Select(ut => $"\t{ut}"));
             }
 
-            var untracked = Untracked(meals, foods);
+            var untracked = Untracked(fullMeals, foods);
             if (untracked.Any())
             {
                 summary.Add($"{Environment.NewLine}Untracked:");
