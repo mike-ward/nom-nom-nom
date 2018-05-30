@@ -38,6 +38,8 @@ namespace nom_nom_nom.Services
                 .ToList();
 
             var summary = new List<string>();
+            summary.Add("<html><body><pre>");
+
 
             foreach (var group in groups)
             {
@@ -88,6 +90,7 @@ namespace nom_nom_nom.Services
                 summary.AddRange(untracked.Select(ut => $"\t{ut}"));
             }
 
+            summary.Add("</pre></body></html>");
             return string.Join(Environment.NewLine, summary);
         }
 
